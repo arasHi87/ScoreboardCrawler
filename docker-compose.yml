@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  redis:
+    container_name: scist_redis
+    image: "bitnami/redis:6.0"
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - redisdata:/data
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+
+volumes:
+  redisdata:
+    name: scist_redisdata

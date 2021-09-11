@@ -16,6 +16,7 @@ var log = logrus.New()
 
 func main() {
 	var users map[string]map[string]string
+	// ctx := context.Background()
 	tojCrawler := crawler.TojCrawler()
 	uvaCrawler := crawler.UvaCrawler()
 
@@ -56,4 +57,7 @@ func main() {
 	// get all submission
 	tojCrawler.Wait()
 	uvaCrawler.Wait()
+
+	// integration all result into result.json
+	util.IntegrationReseult(homeworkFile, users)
 }

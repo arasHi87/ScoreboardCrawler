@@ -9,7 +9,6 @@ import (
 	"github.com/gocolly/colly"
 )
 
-var ctx = context.Background()
 var tojStatusCodeMap = map[string]string{
 	"Accepted":              "AC",
 	"Wrong Answer":          "WA",
@@ -20,6 +19,7 @@ var tojStatusCodeMap = map[string]string{
 }
 
 func TojCrawler() *colly.Collector {
+	ctx := context.Background()
 	c := colly.NewCollector(
 		colly.MaxDepth(1),
 		colly.Async(true),

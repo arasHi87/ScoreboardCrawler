@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -9,7 +10,6 @@ import (
 	"github.com/gocolly/colly"
 )
 
-// var ctx = context.Background()
 var uvaStatusCodeMap = map[string]string{
 	"90": "AC",
 	"70": "WA",
@@ -28,6 +28,7 @@ type user struct {
 }
 
 func UvaCrawler() *colly.Collector {
+	ctx := context.Background()
 	numCollector := colly.NewCollector(
 		colly.MaxDepth(1),
 		colly.Async(true),

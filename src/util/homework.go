@@ -6,10 +6,10 @@ import (
 )
 
 type Homework struct {
-	Problems []Problem `json:"problems"`
+	Problems []problem `json:"problems"`
 }
 
-type Problem struct {
+type problem struct {
 	JudgeName string `json:"judge_name"`
 	ProblemId string `json:"problem_id"`
 }

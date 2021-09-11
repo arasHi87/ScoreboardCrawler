@@ -3,7 +3,6 @@ package crawler
 import (
 	"context"
 	"fmt"
-	"net/url"
 
 	"github.com/arasHi87/ScoreboardCrawler/src/util"
 	"github.com/gocolly/colly"
@@ -51,16 +50,6 @@ func TojCrawler() *colly.Collector {
 
 	c.OnRequest(func(r *colly.Request) {
 		fmt.Println("Visiting", r.URL.String())
-
-		// parse url
-		u, err := url.Parse(r.URL.String())
-		if err != nil {
-			panic(err)
-		}
-		m, _ := url.ParseQuery(u.RawQuery)
-
-		r.Ctx.Put("pid", m["proid"][0])
-		r.Ctx.Put("uid", m["acctid"][0])
 	})
 
 	return c

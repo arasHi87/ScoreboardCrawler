@@ -38,16 +38,19 @@ func main() {
 			problemId := problem.ProblemId
 
 			for _, judges := range users {
+				ctx := colly.NewContext()
+				userId := judges[judgeNmae]
+
+				ctx.Put("pid", problemId)
+				ctx.Put("uid", userId)
+
 				switch judgeNmae {
 				case "toj":
-					url := fmt.Sprintf("https://toj.tfcis.org/oj/be/chal?off=0&proid=%s&acctid=%s", problemId, judges["toj"])
-					tojCrawler.Visit(url)
+					url := fmt.Sprintf("https://toj.tfcis.org/oj/be/chal?off=0&proid=%s&acctid=%s", problemId, userId)
+					tojCrawler.Request("GET", url, nil, ctx, nil)
 				case "uva":
-					ctx := colly.NewContext()
 					url := fmt.Sprintf("https://uhunt.onlinejudge.org/api/p/num/%s", problemId)
-
 					ctx.Put("pnum", problemId)
-					ctx.Put("uid", judges["uva"])
 					uvaCrawler.Request("GET", url, nil, ctx, nil)
 				}
 			}

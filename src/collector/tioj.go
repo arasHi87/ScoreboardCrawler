@@ -1,4 +1,4 @@
-package crawler
+package collector
 
 import (
 	"context"
@@ -23,7 +23,7 @@ type tiojUser struct {
 	Url         string `json:"url"`
 }
 
-func TiojCrawler() *colly.Collector {
+func TiojCollector() *colly.Collector {
 	ctx := context.Background()
 	c := colly.NewCollector(
 		colly.MaxDepth(1),

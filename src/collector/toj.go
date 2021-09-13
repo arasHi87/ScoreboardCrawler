@@ -1,4 +1,4 @@
-package crawler
+package collector
 
 import (
 	"context"
@@ -17,7 +17,7 @@ var tojStatusCodeMap = map[string]string{
 	"Compile Error":         "CE",
 }
 
-func TojCrawler() *colly.Collector {
+func TojCollector() *colly.Collector {
 	ctx := context.Background()
 	c := colly.NewCollector(
 		colly.MaxDepth(1),

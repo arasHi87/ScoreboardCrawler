@@ -1,4 +1,4 @@
-package crawler
+package collector
 
 import (
 	"context"
@@ -25,7 +25,7 @@ type uvaUser struct {
 	Submissions [][]int `json:"subs"`
 }
 
-func UvaCrawler() *colly.Collector {
+func UvaCollector() *colly.Collector {
 	ctx := context.Background()
 	numCollector := colly.NewCollector(
 		colly.MaxDepth(1),

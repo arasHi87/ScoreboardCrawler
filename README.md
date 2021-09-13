@@ -39,6 +39,7 @@ This Project support following judge, and will read `homework`, `user` file to b
 
 - [TOJ](https://toj.tfcis.org)
 - [UVA](https://onlinejudge.org)
+- [TIOJ](https://tioj.ck.tp.edu.tw)
 
 ### Structure
 
@@ -54,6 +55,10 @@ This Project support following judge, and will read `homework`, `user` file to b
     {
       "judge_name": "toj",
       "problem_id": "87"
+    },
+    {
+      "judge_name": "tioj",
+      "problem_id": "1719"
     }
   ]
 }
@@ -65,7 +70,8 @@ This Project support following judge, and will read `homework`, `user` file to b
 {
   "arashi87": {
     "toj": "1931",
-    "uva": "1002251"
+    "uva": "1002251",
+    "tioj": "sa072686"
   }
 }
 ```

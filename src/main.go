@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/arasHi87/ScoreboardCrawler/src/crawler"
+	"github.com/arasHi87/ScoreboardCrawler/src/collector"
 	"github.com/arasHi87/ScoreboardCrawler/src/util"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
@@ -16,9 +16,11 @@ var log = logrus.New()
 
 func main() {
 	var users map[string]map[string]string
-	// ctx := context.Background()
-	tojCrawler := crawler.TojCrawler()
-	uvaCrawler := crawler.UvaCrawler()
+	collectors := map[string]*colly.Collector{
+		"toj":  collector.TojCollector(),
+		"uva":  collector.UvaCollector(),
+		"tioj": collector.TiojCollector(),
+	}
 
 	// load users
 	file, _ := ioutil.ReadFile("data/user.json")
@@ -38,25 +40,32 @@ func main() {
 			problemId := problem.ProblemId
 
 			for _, judges := range users {
+				ctx := colly.NewContext()
+				userId := judges[judgeNmae]
+
+				ctx.Put("pid", problemId)
+				ctx.Put("uid", userId)
+
 				switch judgeNmae {
 				case "toj":
-					url := fmt.Sprintf("https://toj.tfcis.org/oj/be/chal?off=0&proid=%s&acctid=%s", problemId, judges["toj"])
-					tojCrawler.Visit(url)
+					url := fmt.Sprintf("https://toj.tfcis.org/oj/be/chal?off=0&proid=%s&acctid=%s", problemId, userId)
+					collectors[judgeNmae].Request("GET", url, nil, ctx, nil)
 				case "uva":
-					ctx := colly.NewContext()
 					url := fmt.Sprintf("https://uhunt.onlinejudge.org/api/p/num/%s", problemId)
-
 					ctx.Put("pnum", problemId)
-					ctx.Put("uid", judges["uva"])
-					uvaCrawler.Request("GET", url, nil, ctx, nil)
+					collectors[judgeNmae].Request("GET", url, nil, ctx, nil)
+				case "tioj":
+					url := fmt.Sprintf("https://tioj.ck.tp.edu.tw/submissions.json?filter_username=%s&filter_problem=%s", userId, problemId)
+					collectors[judgeNmae].Request("GET", url, nil, ctx, nil)
 				}
 			}
 		}
 	}
 
 	// get all submission
-	tojCrawler.Wait()
-	uvaCrawler.Wait()
+	for _, collector := range collectors {
+		collector.Wait()
+	}
 
 	// integration all result into result.json
 	util.IntegrationReseult(homeworkFile, users)

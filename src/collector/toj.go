@@ -1,9 +1,8 @@
-package crawler
+package collector
 
 import (
 	"context"
 	"fmt"
-	"net/url"
 
 	"github.com/arasHi87/ScoreboardCrawler/src/util"
 	"github.com/gocolly/colly"
@@ -18,7 +17,7 @@ var tojStatusCodeMap = map[string]string{
 	"Compile Error":         "CE",
 }
 
-func TojCrawler() *colly.Collector {
+func TojCollector() *colly.Collector {
 	ctx := context.Background()
 	c := colly.NewCollector(
 		colly.MaxDepth(1),
@@ -51,16 +50,6 @@ func TojCrawler() *colly.Collector {
 
 	c.OnRequest(func(r *colly.Request) {
 		fmt.Println("Visiting", r.URL.String())
-
-		// parse url
-		u, err := url.Parse(r.URL.String())
-		if err != nil {
-			panic(err)
-		}
-		m, _ := url.ParseQuery(u.RawQuery)
-
-		r.Ctx.Put("pid", m["proid"][0])
-		r.Ctx.Put("uid", m["acctid"][0])
 	})
 
 	return c

@@ -11,6 +11,10 @@
     {
       "judge_name": "uva",
       "problem_id": "1586"
+    },
+    {
+      "judge_name": "tioj",
+      "problem_id": "1719"
     }
   ]
 }

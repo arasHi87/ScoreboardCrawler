@@ -16,10 +16,11 @@ var log = logrus.New()
 
 func main() {
 	var users map[string]map[string]string
-	// ctx := context.Background()
-	tojCrawler := crawler.TojCrawler()
-	uvaCrawler := crawler.UvaCrawler()
-	tiojCrawler := crawler.TiojCrawler()
+	crawlers := map[string]*colly.Collector{
+		"toj":  crawler.TojCrawler(),
+		"uva":  crawler.UvaCrawler(),
+		"tioj": crawler.TiojCrawler(),
+	}
 
 	// load users
 	file, _ := ioutil.ReadFile("data/user.json")
@@ -48,23 +49,23 @@ func main() {
 				switch judgeNmae {
 				case "toj":
 					url := fmt.Sprintf("https://toj.tfcis.org/oj/be/chal?off=0&proid=%s&acctid=%s", problemId, userId)
-					tojCrawler.Request("GET", url, nil, ctx, nil)
+					crawlers[judgeNmae].Request("GET", url, nil, ctx, nil)
 				case "uva":
 					url := fmt.Sprintf("https://uhunt.onlinejudge.org/api/p/num/%s", problemId)
 					ctx.Put("pnum", problemId)
-					uvaCrawler.Request("GET", url, nil, ctx, nil)
+					crawlers[judgeNmae].Request("GET", url, nil, ctx, nil)
 				case "tioj":
 					url := fmt.Sprintf("https://tioj.ck.tp.edu.tw/submissions.json?filter_username=%s&filter_problem=%s", userId, problemId)
-					tiojCrawler.Request("GET", url, nil, ctx, nil)
+					crawlers[judgeNmae].Request("GET", url, nil, ctx, nil)
 				}
 			}
 		}
 	}
 
 	// get all submission
-	tojCrawler.Wait()
-	uvaCrawler.Wait()
-	tiojCrawler.Wait()
+	for _, crawler := range crawlers {
+		crawler.Wait()
+	}
 
 	// integration all result into result.json
 	util.IntegrationReseult(homeworkFile, users)

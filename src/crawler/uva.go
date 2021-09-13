@@ -19,9 +19,7 @@ var uvaStatusCodeMap = map[string]string{
 	"30": "CE",
 }
 
-type userData map[string]user
-
-type user struct {
+type uvaUser struct {
 	Name        string  `json:"name"`
 	UName       string  `json:"uname"`
 	Submissions [][]int `json:"subs"`
@@ -58,7 +56,7 @@ func UvaCrawler() *colly.Collector {
 
 	statusCollector.OnResponse(func(r *colly.Response) {
 		rdb := util.GetRedis()
-		result := userData{}
+		result := make(map[string]uvaUser)
 		resp := string(r.Body)
 
 		if err := json.Unmarshal([]byte(resp), &result); err != nil {

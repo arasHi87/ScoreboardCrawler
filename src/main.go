@@ -19,6 +19,7 @@ func main() {
 	// ctx := context.Background()
 	tojCrawler := crawler.TojCrawler()
 	uvaCrawler := crawler.UvaCrawler()
+	tiojCrawler := crawler.TiojCrawler()
 
 	// load users
 	file, _ := ioutil.ReadFile("data/user.json")
@@ -52,6 +53,9 @@ func main() {
 					url := fmt.Sprintf("https://uhunt.onlinejudge.org/api/p/num/%s", problemId)
 					ctx.Put("pnum", problemId)
 					uvaCrawler.Request("GET", url, nil, ctx, nil)
+				case "tioj":
+					url := fmt.Sprintf("https://tioj.ck.tp.edu.tw/submissions.json?filter_username=%s&filter_problem=%s", userId, problemId)
+					tiojCrawler.Request("GET", url, nil, ctx, nil)
 				}
 			}
 		}
@@ -60,6 +64,7 @@ func main() {
 	// get all submission
 	tojCrawler.Wait()
 	uvaCrawler.Wait()
+	tiojCrawler.Wait()
 
 	// integration all result into result.json
 	util.IntegrationReseult(homeworkFile, users)

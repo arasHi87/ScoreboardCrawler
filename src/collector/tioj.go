@@ -35,6 +35,7 @@ func TiojCollector() *colly.Collector {
 	})
 
 	c.OnResponse(func(r *colly.Response) {
+		var status string
 		rdb := util.GetRedis()
 		results := make([]tiojUser, 0)
 		resp := string(r.Body)
@@ -46,8 +47,15 @@ func TiojCollector() *colly.Collector {
 		pid, uid := r.Ctx.Get("pid"), r.Ctx.Get("uid")
 		index := fmt.Sprintf("tioj:%s-%s", pid, uid)
 
+		// map status
+		if results[0].Result == "IE" {
+			status = "OE"
+		} else {
+			status = results[0].Result
+		}
+
 		// insert data into db
-		err := rdb.Set(ctx, index, results[0].Result, 0).Err()
+		err := rdb.Set(ctx, index, status, 0).Err()
 		if err != nil {
 			panic(err)
 		}

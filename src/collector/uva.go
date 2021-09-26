@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/arasHi87/ScoreboardCrawler/src/util"
 	"github.com/gocolly/colly"
@@ -26,9 +27,10 @@ type uvaUser struct {
 	Submissions [][]int `json:"subs"`
 }
 
-func UvaCollector(urls []UrlElement) {
+func UvaCollector(urls []UrlElement, wg *sync.WaitGroup) {
 	// !important thing
 	// In order to maintain the unity of the data structure, the pids here are pnum
+	defer wg.Done()
 	uids := ""
 	pids := make(map[string]bool)
 	c := colly.NewCollector(

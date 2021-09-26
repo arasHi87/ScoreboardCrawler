@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	"github.com/arasHi87/ScoreboardCrawler/src/util"
 	"github.com/gocolly/colly"
@@ -23,8 +24,8 @@ type tiojUser struct {
 	Url         string `json:"url"`
 }
 
-func TiojCollector(urls []UrlElement) {
-
+func TiojCollector(urls []UrlElement, wg *sync.WaitGroup) {
+	defer wg.Done()
 	c := colly.NewCollector(
 		colly.MaxDepth(1),
 		colly.Async(true),

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"sync"
 
 	"github.com/arasHi87/ScoreboardCrawler/src/collector"
 	"github.com/arasHi87/ScoreboardCrawler/src/util"
@@ -60,17 +61,20 @@ func main() {
 	}
 
 	// run collector
+	wg := new(sync.WaitGroup)
 	for judgeNmae, urls := range urls {
+		wg.Add(1)
 		switch judgeNmae {
 		case "toj":
-			collector.TojCollector(urls)
+			go collector.TojCollector(urls, wg)
 		case "uva":
-			collector.UvaCollector(urls)
+			go collector.UvaCollector(urls, wg)
 		case "tioj":
-			collector.TiojCollector(urls)
+			go collector.TiojCollector(urls, wg)
 		}
 	}
 
 	// integration all result into result.json
+	wg.Wait()
 	util.IntegrationReseult(homeworkFile, users)
 }

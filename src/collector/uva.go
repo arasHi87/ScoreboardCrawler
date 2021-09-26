@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/arasHi87/ScoreboardCrawler/src/util"
 	"github.com/gocolly/colly"
@@ -25,37 +26,21 @@ type uvaUser struct {
 	Submissions [][]int `json:"subs"`
 }
 
-func UvaCollector() *colly.Collector {
-	ctx := context.Background()
-	numCollector := colly.NewCollector(
+func UvaCollector(urls []UrlElement) {
+	// !important thing
+	// In order to maintain the unity of the data structure, the pids here are pnum
+	uids := ""
+	pids := make(map[string]bool)
+	c := colly.NewCollector(
 		colly.MaxDepth(1),
 		colly.Async(true),
 	)
-	statusCollector := numCollector.Clone()
 
-	numCollector.OnRequest(func(r *colly.Request) {
+	c.OnRequest(func(r *colly.Request) {
 		fmt.Println("Visiting", r.URL.String())
 	})
 
-	numCollector.OnResponse(func(r *colly.Response) {
-		uid := r.Ctx.Get("uid")
-		problem := make(map[string]int)
-		resp := string(r.Body)
-
-		json.Unmarshal([]byte(resp), &problem)
-		r.Ctx.Put("pid", problem["pid"])
-
-		url := fmt.Sprintf("https://uhunt.onlinejudge.org/api/subs-pids/%s/%d/0", uid, problem["pid"])
-		statusCollector.Request("GET", url, nil, r.Ctx, nil)
-		statusCollector.Wait()
-	})
-
-	statusCollector.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting", r.URL.String())
-	})
-
-	statusCollector.OnResponse(func(r *colly.Response) {
-		rdb := util.GetRedis()
+	c.OnResponse(func(r *colly.Response) {
 		result := make(map[string]uvaUser)
 		resp := string(r.Body)
 
@@ -63,10 +48,11 @@ func UvaCollector() *colly.Collector {
 			fmt.Println(err.Error())
 		}
 
-		// conver status code
-		for userId, val := range result {
-			problemNum := r.Ctx.Get("pnum")
-			index := fmt.Sprintf("uva:%s-%s", problemNum, userId)
+		for uid, val := range result {
+			rdb := util.GetRedis()
+			pnum := r.Ctx.Get("pnum")
+			ctx := context.Background()
+			index := fmt.Sprintf("uva:%s-%s", pnum, uid)
 
 			if len(val.Submissions) > 0 {
 				verdictId := strconv.Itoa(val.Submissions[0][2])
@@ -91,5 +77,25 @@ func UvaCollector() *colly.Collector {
 		}
 	})
 
-	return numCollector
+	// classification pid and uid
+	for _, url := range urls {
+		uid := url.Uid
+		pids[url.Pid] = true
+
+		// insert pid and uid into string
+		if i := strings.Index(uids, uid); i == -1 {
+			uids = uids + uid + ","
+		}
+	}
+
+	// build url string and pass to collector
+	for pid := range pids {
+		ctx := colly.NewContext()
+		url := fmt.Sprintf("https://uhunt.onlinejudge.org/api/subs-nums/%s/%s/0", uids, pid)
+
+		ctx.Put("pnum", pid) // watch out pid here is pnum
+		c.Request("GET", url, nil, ctx, nil)
+	}
+
+	c.Wait()
 }

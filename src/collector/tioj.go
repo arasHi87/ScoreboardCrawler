@@ -23,8 +23,8 @@ type tiojUser struct {
 	Url         string `json:"url"`
 }
 
-func TiojCollector() *colly.Collector {
-	ctx := context.Background()
+func TiojCollector(urls []UrlElement) {
+
 	c := colly.NewCollector(
 		colly.MaxDepth(1),
 		colly.Async(true),
@@ -37,6 +37,7 @@ func TiojCollector() *colly.Collector {
 	c.OnResponse(func(r *colly.Response) {
 		var status string
 		rdb := util.GetRedis()
+		ctx := context.Background()
 		results := make([]tiojUser, 0)
 		resp := string(r.Body)
 
@@ -61,5 +62,12 @@ func TiojCollector() *colly.Collector {
 		}
 	})
 
-	return c
+	for _, url := range urls {
+		ctx := colly.NewContext()
+
+		ctx.Put("pid", url.Pid)
+		ctx.Put("uid", url.Uid)
+		c.Request("GET", url.Url, nil, ctx, nil)
+	}
+	c.Wait()
 }

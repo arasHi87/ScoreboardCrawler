@@ -3,6 +3,7 @@ package collector
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/arasHi87/ScoreboardCrawler/src/util"
 	"github.com/gocolly/colly"
@@ -17,7 +18,8 @@ var tojStatusCodeMap = map[string]string{
 	"Compile Error":         "CE",
 }
 
-func TojCollector() *colly.Collector {
+func TojCollector(urls []UrlElement, wg *sync.WaitGroup) {
+	defer wg.Done()
 	ctx := context.Background()
 	c := colly.NewCollector(
 		colly.MaxDepth(1),
@@ -52,5 +54,12 @@ func TojCollector() *colly.Collector {
 		fmt.Println("Visiting", r.URL.String())
 	})
 
-	return c
+	for _, url := range urls {
+		ctx := colly.NewContext()
+
+		ctx.Put("pid", url.Pid)
+		ctx.Put("uid", url.Uid)
+		c.Request("GET", url.Url, nil, ctx, nil)
+	}
+	c.Wait()
 }

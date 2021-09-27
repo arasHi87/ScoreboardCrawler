@@ -11,17 +11,9 @@ import (
 )
 
 type tiojSubmission struct {
-	Id          int    `json:"id"`
-	Result      string `json:"result"`
-	Score       string `json:"score"`
-	ProblemId   int    `json:"problem_id"`
-	Submitter   string `json:"submitter"`
-	TotalTime   int    `json:"total_time"`
-	TotalMemory int    `json:"total_memory"`
-	Compiler    string `json:"compiler"`
-	CodeLength  int    `json:"code_length"`
-	CreatedAt   string `json:"created_at"`
-	Url         string `json:"url"`
+	Id        int    `json:"id"`
+	Result    string `json:"result"`
+	ProblemId int    `json:"problem_id"`
 }
 
 func TiojCollector(urls []UrlElement, wg *sync.WaitGroup) {

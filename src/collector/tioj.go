@@ -10,7 +10,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-type tiojUser struct {
+type tiojSubmission struct {
 	Id          int    `json:"id"`
 	Result      string `json:"result"`
 	Score       string `json:"score"`
@@ -39,7 +39,7 @@ func TiojCollector(urls []UrlElement, wg *sync.WaitGroup) {
 		var status string
 		rdb := util.GetRedis()
 		ctx := context.Background()
-		results := make([]tiojUser, 0)
+		results := make([]tiojSubmission, 0)
 		resp := string(r.Body)
 
 		if err := json.Unmarshal([]byte(resp), &results); err != nil {

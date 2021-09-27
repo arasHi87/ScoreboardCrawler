@@ -21,7 +21,7 @@ var uvaStatusCodeMap = map[string]string{
 	"30": "CE",
 }
 
-type uvaUser struct {
+type uvaSubmission struct {
 	Name        string  `json:"name"`
 	UName       string  `json:"uname"`
 	Submissions [][]int `json:"subs"`
@@ -43,7 +43,7 @@ func UvaCollector(urls []UrlElement, wg *sync.WaitGroup) {
 	})
 
 	c.OnResponse(func(r *colly.Response) {
-		result := make(map[string]uvaUser)
+		result := make(map[string]uvaSubmission)
 		resp := string(r.Body)
 
 		if err := json.Unmarshal([]byte(resp), &result); err != nil {

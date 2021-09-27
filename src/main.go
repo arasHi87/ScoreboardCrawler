@@ -71,6 +71,8 @@ func main() {
 			go collector.UvaCollector(urls, wg)
 		case "tioj":
 			go collector.TiojCollector(urls, wg)
+		case "atcoder":
+			collector.AtcoderCollector(urls, wg)
 		}
 	}
 

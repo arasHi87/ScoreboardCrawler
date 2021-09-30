@@ -15,6 +15,14 @@
     {
       "judge_name": "atcoder",
       "problem_id": "APG4b_cd"
+    },
+    {
+      "judge_name": "kattis",
+      "problem_id": "3sideddice"
+    },
+    {
+      "judge_name": "zoj",
+      "problem_id": "e642"
     }
   ]
 }

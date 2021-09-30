@@ -19,6 +19,18 @@
     {
       "judge_name": "atcoder",
       "problem_id": "APG4b_a"
+    },
+    {
+      "judge_name": "kattis",
+      "problem_id": "sequences"
+    },
+    {
+      "judge_name": "zoj",
+      "problem_id": "c112"
+    },
+    {
+      "judge_name": "kattis",
+      "problem_id": "rijeci"
     }
   ]
 }

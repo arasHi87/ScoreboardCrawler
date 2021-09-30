@@ -73,6 +73,10 @@ func main() {
 			go collector.TiojCollector(urls, wg)
 		case "atcoder":
 			collector.AtcoderCollector(urls, wg)
+		case "kattis":
+			collector.SheetCollector("Kattis", urls, wg)
+		case "zoj":
+			collector.SheetCollector("ZeroJudge", urls, wg)
 		}
 	}
 
